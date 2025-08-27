@@ -10,6 +10,7 @@ import '../../services/demo_data_service.dart';
 import '../auth/login_screen.dart';
 import '../appointment/create_appointment_screen.dart';
 import '../blog/blog_screen.dart';
+import '../payment/payment_history_screen.dart';
 import 'package:intl/intl.dart';
 
 class PatientPanelScreen extends StatefulWidget {
@@ -28,7 +29,7 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
   final _authService = AuthService();
 
   late TabController _tabController;
-  
+
   List<MedicalRecord> _medicalRecords = [];
   List<PatientNote> _patientNotes = [];
   List<Appointment> _appointments = [];
@@ -38,7 +39,7 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 6, vsync: this);
     _loadPatientData();
   }
 
@@ -50,10 +51,18 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
 
   Future<void> _loadPatientData() async {
     try {
-      final records = await _patientTrackingService.getMedicalRecords(widget.patient.id);
-      final notes = await _patientTrackingService.getPatientNotes(widget.patient.id);
-      final appointments = await _appointmentService.getUserAppointments(widget.patient.id);
-      final summary = await _patientTrackingService.getPatientSummary(widget.patient.id);
+      final records = await _patientTrackingService.getMedicalRecords(
+        widget.patient.id,
+      );
+      final notes = await _patientTrackingService.getPatientNotes(
+        widget.patient.id,
+      );
+      final appointments = await _appointmentService.getUserAppointments(
+        widget.patient.id,
+      );
+      final summary = await _patientTrackingService.getPatientSummary(
+        widget.patient.id,
+      );
 
       setState(() {
         _medicalRecords = records;
@@ -67,9 +76,9 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Veriler yüklenirken hata: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Veriler yüklenirken hata: $e')));
       }
     }
   }
@@ -85,9 +94,9 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Çıkış yaparken hata: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Çıkış yaparken hata: $e')));
       }
     }
   }
@@ -95,9 +104,7 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -121,7 +128,9 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
                 context: context,
                 builder: (context) => AlertDialog(
                   title: const Text('Çıkış Yap'),
-                  content: const Text('Çıkış yapmak istediğinizden emin misiniz?'),
+                  content: const Text(
+                    'Çıkış yapmak istediğinizden emin misiniz?',
+                  ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
@@ -152,6 +161,7 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
             Tab(icon: Icon(Icons.medical_services), text: 'Tedavi Geçmişi'),
             Tab(icon: Icon(Icons.calendar_today), text: 'Randevular'),
             Tab(icon: Icon(Icons.note), text: 'Notlar'),
+            Tab(icon: Icon(Icons.payment), text: 'Ödemeler'),
             Tab(icon: Icon(Icons.article), text: 'Blog'),
           ],
         ),
@@ -163,6 +173,7 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
           _buildMedicalHistoryTab(),
           _buildAppointmentsTab(),
           _buildNotesTab(),
+          _buildPaymentsTab(),
           _buildBlogTab(),
         ],
       ),
@@ -231,10 +242,13 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
   Widget _buildStatsCards() {
     final totalAppointments = _appointments.length;
     final upcomingAppointments = _appointments
-        .where((app) => app.appointmentDate.isAfter(DateTime.now()) && 
-                       app.status != AppointmentStatus.cancelled)
+        .where(
+          (app) =>
+              app.appointmentDate.isAfter(DateTime.now()) &&
+              app.status != AppointmentStatus.cancelled,
+        )
         .length;
-    
+
     return Column(
       children: [
         Row(
@@ -284,7 +298,12 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -304,10 +323,7 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
             ),
             Text(
               title,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
           ],
@@ -339,7 +355,9 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
               ),
             ),
             const SizedBox(height: 12),
-            if (_medicalRecords.isEmpty && _patientNotes.isEmpty && _appointments.isEmpty)
+            if (_medicalRecords.isEmpty &&
+                _patientNotes.isEmpty &&
+                _appointments.isEmpty)
               const Center(
                 child: Padding(
                   padding: EdgeInsets.all(20),
@@ -359,7 +377,9 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
                 _buildActivityItem(
                   'Yaklaşan Randevu',
                   recentAppointments.first.treatmentType,
-                  DateFormat('dd.MM.yyyy').format(recentAppointments.first.appointmentDate),
+                  DateFormat(
+                    'dd.MM.yyyy',
+                  ).format(recentAppointments.first.appointmentDate),
                   Icons.calendar_today,
                   Colors.blue,
                 ),
@@ -367,7 +387,12 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
                 _buildActivityItem(
                   'Yaklaşan Not',
                   _patientNotes.where((note) => !note.isCompleted).first.title,
-                  DateFormat('dd.MM.yyyy').format(_patientNotes.where((note) => !note.isCompleted).first.dueDate),
+                  DateFormat('dd.MM.yyyy').format(
+                    _patientNotes
+                        .where((note) => !note.isCompleted)
+                        .first
+                        .dueDate,
+                  ),
                   Icons.note,
                   Colors.orange,
                 ),
@@ -378,7 +403,13 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
     );
   }
 
-  Widget _buildActivityItem(String type, String title, String date, IconData icon, Color color) {
+  Widget _buildActivityItem(
+    String type,
+    String title,
+    String date,
+    IconData icon,
+    Color color,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -398,10 +429,7 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
               children: [
                 Text(
                   type,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
                 Text(
                   title,
@@ -413,13 +441,7 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
               ],
             ),
           ),
-          Text(
-            date,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-            ),
-          ),
+          Text(date, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
         ],
       ),
     );
@@ -475,20 +497,14 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
                 ),
                 Text(
                   DateFormat('dd.MM.yyyy').format(record.date),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
               'Doktor: ${record.doctorName}',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[700],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
             ),
             if (record.diagnosis.isNotEmpty) ...[
               const SizedBox(height: 8),
@@ -512,10 +528,7 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
                     Expanded(
                       child: Text(
                         'Reçete: ${record.prescription}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.blue[700],
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.blue[700]),
                       ),
                     ),
                   ],
@@ -526,10 +539,7 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
               const SizedBox(height: 8),
               Text(
                 'Notlar: ${record.notes}',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
             ],
             if (record.attachments.isNotEmpty) ...[
@@ -562,7 +572,11 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.calendar_today, size: 64, color: Colors.grey[400]),
+                    Icon(
+                      Icons.calendar_today,
+                      size: 64,
+                      color: Colors.grey[400],
+                    ),
                     const SizedBox(height: 16),
                     const Text('Henüz randevu yok'),
                     const SizedBox(height: 16),
@@ -573,7 +587,10 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue[600],
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
                       ),
                     ),
                   ],
@@ -600,7 +617,8 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
   Future<void> _createNewAppointment() async {
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => CreateAppointmentScreen(userId: widget.patient.id),
+        builder: (context) =>
+            CreateAppointmentScreen(userId: widget.patient.id),
       ),
     );
 
@@ -665,7 +683,10 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -688,20 +709,14 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
                 const SizedBox(width: 4),
                 Text(
                   DateFormat('dd.MM.yyyy').format(appointment.appointmentDate),
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[700],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                 ),
                 const SizedBox(width: 16),
                 Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
                 const SizedBox(width: 4),
                 Text(
                   appointment.timeSlot,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[700],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                 ),
               ],
             ),
@@ -713,10 +728,7 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
                   const SizedBox(width: 4),
                   Text(
                     'Doktor: ${appointment.doctorName}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[700],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                   ),
                 ],
               ),
@@ -725,10 +737,7 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
               const SizedBox(height: 8),
               Text(
                 'Notlar: ${appointment.notes}',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
             ],
           ],
@@ -763,11 +772,12 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
   }
 
   Widget _buildNoteCard(PatientNote note) {
-    final isOverdue = note.dueDate.isBefore(DateTime.now()) && !note.isCompleted;
-    final color = note.isCompleted 
-        ? Colors.green 
-        : isOverdue 
-        ? Colors.red 
+    final isOverdue =
+        note.dueDate.isBefore(DateTime.now()) && !note.isCompleted;
+    final color = note.isCompleted
+        ? Colors.green
+        : isOverdue
+        ? Colors.red
         : Colors.orange;
 
     return Card(
@@ -792,12 +802,17 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      decoration: note.isCompleted ? TextDecoration.lineThrough : null,
+                      decoration: note.isCompleted
+                          ? TextDecoration.lineThrough
+                          : null,
                     ),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -816,16 +831,10 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
             const SizedBox(height: 8),
             Text(
               'Doktor: ${note.doctorName}',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[700],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
             ),
             const SizedBox(height: 8),
-            Text(
-              note.content,
-              style: const TextStyle(fontSize: 14),
-            ),
+            Text(note.content, style: const TextStyle(fontSize: 14)),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -833,10 +842,7 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
                 const SizedBox(width: 4),
                 Text(
                   'Hedef: ${DateFormat('dd.MM.yyyy').format(note.dueDate)}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
                 if (isOverdue) ...[
                   const Spacer(),
@@ -859,5 +865,9 @@ class _PatientPanelScreenState extends State<PatientPanelScreen>
 
   Widget _buildBlogTab() {
     return const BlogScreen();
+  }
+
+  Widget _buildPaymentsTab() {
+    return PaymentHistoryScreen(userId: widget.patient.id);
   }
 }

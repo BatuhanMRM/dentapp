@@ -9,13 +9,13 @@ class BlogService {
   Future<List<BlogPost>> getBlogPosts() async {
     final prefs = await SharedPreferences.getInstance();
     final blogPostsData = prefs.getStringList(_blogPostsKey) ?? [];
-    
+
     if (blogPostsData.isEmpty) {
       // İlk çalıştırmada demo verilerini yükle
       await _loadDemoData();
       return getBlogPosts();
     }
-    
+
     return blogPostsData
         .map((data) => BlogPost.fromJson(json.decode(data)))
         .toList()
@@ -55,7 +55,7 @@ class BlogService {
   Future<void> incrementViews(String postId) async {
     final allPosts = await getBlogPosts();
     final postIndex = allPosts.indexWhere((post) => post.id == postId);
-    
+
     if (postIndex != -1) {
       allPosts[postIndex] = allPosts[postIndex].copyWith(
         views: allPosts[postIndex].views + 1,
@@ -68,7 +68,7 @@ class BlogService {
   Future<void> likeBlogPost(String postId) async {
     final allPosts = await getBlogPosts();
     final postIndex = allPosts.indexWhere((post) => post.id == postId);
-    
+
     if (postIndex != -1) {
       allPosts[postIndex] = allPosts[postIndex].copyWith(
         likes: allPosts[postIndex].likes + 1,
@@ -81,12 +81,12 @@ class BlogService {
   Future<List<BlogPost>> searchBlogPosts(String query) async {
     final allPosts = await getBlogPosts();
     final lowercaseQuery = query.toLowerCase();
-    
+
     return allPosts.where((post) {
       return post.title.toLowerCase().contains(lowercaseQuery) ||
-             post.excerpt.toLowerCase().contains(lowercaseQuery) ||
-             post.content.toLowerCase().contains(lowercaseQuery) ||
-             post.tags.any((tag) => tag.toLowerCase().contains(lowercaseQuery));
+          post.excerpt.toLowerCase().contains(lowercaseQuery) ||
+          post.content.toLowerCase().contains(lowercaseQuery) ||
+          post.tags.any((tag) => tag.toLowerCase().contains(lowercaseQuery));
     }).toList();
   }
 
@@ -98,7 +98,9 @@ class BlogService {
   // Blog yazılarını kaydet
   Future<void> _saveBlogPosts(List<BlogPost> posts) async {
     final prefs = await SharedPreferences.getInstance();
-    final blogPostsData = posts.map((post) => json.encode(post.toJson())).toList();
+    final blogPostsData = posts
+        .map((post) => json.encode(post.toJson()))
+        .toList();
     await prefs.setStringList(_blogPostsKey, blogPostsData);
   }
 
@@ -108,7 +110,8 @@ class BlogService {
       BlogPost(
         id: '1',
         title: 'Günlük Diş Bakımı: Doğru Fırçalama Teknikleri',
-        excerpt: 'Diş sağlığınızı korumak için doğru fırçalama tekniklerini öğrenin. Uzmanlarımızdan adım adım rehber.',
+        excerpt:
+            'Diş sağlığınızı korumak için doğru fırçalama tekniklerini öğrenin. Uzmanlarımızdan adım adım rehber.',
         content: '''# Günlük Diş Bakımı: Doğru Fırçalama Teknikleri
 
 Diş sağlığınızı korumak için en önemli alışkanlık düzenli ve doğru diş fırçalamadır. Bu yazımızda doğru fırçalama tekniklerini detaylı olarak ele alacağız.
@@ -135,7 +138,8 @@ Diş sağlığınızı korumak için en önemli alışkanlık düzenli ve doğru
 Düzenli diş fırçalama ile çürük, diş eti hastalıkları ve ağız kokusunu önleyebilirsiniz.''',
         category: BlogCategory.preventive.displayName,
         tags: ['diş fırçalama', 'ağız bakımı', 'günlük bakım', 'diş sağlığı'],
-        imageUrl: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800',
+        imageUrl:
+            'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800',
         authorName: 'Dr. Ayşe Kaya',
         publishedAt: DateTime.now().subtract(const Duration(days: 2)),
         readTimeMinutes: 5,
@@ -143,11 +147,12 @@ Düzenli diş fırçalama ile çürük, diş eti hastalıkları ve ağız kokusu
         views: 245,
         likes: 18,
       ),
-      
+
       BlogPost(
         id: '2',
         title: 'Çocuklarda Diş Çürüğü: Önleme ve Tedavi',
-        excerpt: 'Çocukların diş sağlığını korumak için alınması gereken önlemler ve erken dönem müdahale yöntemleri.',
+        excerpt:
+            'Çocukların diş sağlığını korumak için alınması gereken önlemler ve erken dönem müdahale yöntemleri.',
         content: '''# Çocuklarda Diş Çürüğü: Önleme ve Tedavi
 
 Çocukların diş sağlığı, gelecekteki ağız sağlığının temelini oluşturur. Bu yazımızda çocuklarda diş çürüğü önleme yöntemlerini ele alacağız.
@@ -181,7 +186,8 @@ Düzenli diş fırçalama ile çürük, diş eti hastalıkları ve ağız kokusu
 Erken teşhis ve tedavi ile çocuğunuzun diş sağlığını koruyabilirsiniz.''',
         category: BlogCategory.children.displayName,
         tags: ['çocuk diş hekimliği', 'diş çürüğü', 'önleme', 'çocuk sağlığı'],
-        imageUrl: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800',
+        imageUrl:
+            'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800',
         authorName: 'Dr. Mehmet Özkan',
         publishedAt: DateTime.now().subtract(const Duration(days: 5)),
         readTimeMinutes: 7,
@@ -189,11 +195,12 @@ Erken teşhis ve tedavi ile çocuğunuzun diş sağlığını koruyabilirsiniz.'
         views: 189,
         likes: 24,
       ),
-      
+
       BlogPost(
         id: '3',
         title: 'Diş Eti Hastalıkları: Gingivit ve Periodontit',
-        excerpt: 'Diş eti hastalıklarının belirtileri, nedenleri ve tedavi yöntemleri hakkında kapsamlı bilgiler.',
+        excerpt:
+            'Diş eti hastalıklarının belirtileri, nedenleri ve tedavi yöntemleri hakkında kapsamlı bilgiler.',
         content: '''# Diş Eti Hastalıkları: Gingivit ve Periodontit
 
 Diş eti hastalıkları, diş kaybının en önemli nedenlerinden biridir. Bu yazımızda gingivit ve periodontit hakkında bilgi vereceğiz.
@@ -240,7 +247,8 @@ Tedavi edilmeyen gingivitin ilerlemesi ile oluşan ciddi diş eti hastalığıd�
 Erken teşhis ile diş eti hastalıkları başarıyla tedavi edilebilir.''',
         category: BlogCategory.treatment.displayName,
         tags: ['diş eti hastalığı', 'gingivit', 'periodontit', 'tedavi'],
-        imageUrl: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800',
+        imageUrl:
+            'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800',
         authorName: 'Dr. Fatma Demir',
         publishedAt: DateTime.now().subtract(const Duration(days: 8)),
         readTimeMinutes: 6,
@@ -248,11 +256,12 @@ Erken teşhis ile diş eti hastalıkları başarıyla tedavi edilebilir.''',
         views: 156,
         likes: 12,
       ),
-      
+
       BlogPost(
         id: '4',
         title: 'Acil Diş Ağrısında Ne Yapmalı?',
-        excerpt: 'Gece yarısı başlayan diş ağrısı için evde uygulayabileceğiniz ilk yardım yöntemleri ve ağrı kesici öneriler.',
+        excerpt:
+            'Gece yarısı başlayan diş ağrısı için evde uygulayabileceğiniz ilk yardım yöntemleri ve ağrı kesici öneriler.',
         content: '''# Acil Diş Ağrısında Ne Yapmalı?
 
 Diş ağrısı genellikle en beklenmedik zamanlarda ortaya çıkar. Bu yazımızda acil diş ağrısında yapılabilecekleri ele alacağız.
@@ -295,7 +304,8 @@ Diş ağrısı genellikle en beklenmedik zamanlarda ortaya çıkar. Bu yazımız
 Remember: Diş ağrısı her zaman ciddi bir problemi işaret eder, en kısa sürede diş hekimine başvurun.''',
         category: BlogCategory.emergency.displayName,
         tags: ['acil durum', 'diş ağrısı', 'ilk yardım', 'ağrı kesici'],
-        imageUrl: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=800',
+        imageUrl:
+            'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=800',
         authorName: 'Dr. Can Yılmaz',
         publishedAt: DateTime.now().subtract(const Duration(days: 12)),
         readTimeMinutes: 4,
@@ -303,11 +313,12 @@ Remember: Diş ağrısı her zaman ciddi bir problemi işaret eder, en kısa sü
         views: 312,
         likes: 28,
       ),
-      
+
       BlogPost(
         id: '5',
         title: 'Diş Beyazlatma: Yöntemler ve Öneriler',
-        excerpt: 'Evde ve klinikte uygulanan diş beyazlatma yöntemleri, avantajları ve dikkat edilmesi gereken noktalar.',
+        excerpt:
+            'Evde ve klinikte uygulanan diş beyazlatma yöntemleri, avantajları ve dikkat edilmesi gereken noktalar.',
         content: '''# Diş Beyazlatma: Yöntemler ve Öneriler
 
 Güzel bir gülümseme için beyaz dişler önemlidir. Bu yazımızda diş beyazlatma yöntemlerini detaylı olarak inceleyeceğiz.
@@ -359,7 +370,8 @@ Güzel bir gülümseme için beyaz dişler önemlidir. Bu yazımızda diş beyaz
 Profesyonel beyazlatma en güvenli ve etkili yöntemdir.''',
         category: BlogCategory.cosmetic.displayName,
         tags: ['diş beyazlatma', 'estetik', 'gülümseme', 'beyaz diş'],
-        imageUrl: 'https://images.unsplash.com/photo-1609840114035-3c981960af0e?w=800',
+        imageUrl:
+            'https://images.unsplash.com/photo-1609840114035-3c981960af0e?w=800',
         authorName: 'Dr. Elif Şahin',
         publishedAt: DateTime.now().subtract(const Duration(days: 15)),
         readTimeMinutes: 8,

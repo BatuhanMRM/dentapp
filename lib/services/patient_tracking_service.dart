@@ -13,12 +13,12 @@ class PatientTrackingService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final recordsJson = prefs.getStringList(_medicalRecordsKey) ?? [];
-      
+
       final records = recordsJson
           .map((json) => MedicalRecord.fromMap(jsonDecode(json)))
           .where((record) => record.patientId == patientId)
           .toList();
-      
+
       records.sort((a, b) => b.date.compareTo(a.date));
       return records;
     } catch (e) {
@@ -30,7 +30,7 @@ class PatientTrackingService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final recordsJson = prefs.getStringList(_medicalRecordsKey) ?? [];
-      
+
       recordsJson.add(jsonEncode(record.toMap()));
       await prefs.setStringList(_medicalRecordsKey, recordsJson);
     } catch (e) {
@@ -42,7 +42,7 @@ class PatientTrackingService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final recordsJson = prefs.getStringList(_medicalRecordsKey) ?? [];
-      
+
       final index = recordsJson.indexWhere((json) {
         final existingRecord = MedicalRecord.fromMap(jsonDecode(json));
         return existingRecord.id == record.id;
@@ -61,7 +61,7 @@ class PatientTrackingService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final recordsJson = prefs.getStringList(_medicalRecordsKey) ?? [];
-      
+
       recordsJson.removeWhere((json) {
         final record = MedicalRecord.fromMap(jsonDecode(json));
         return record.id == recordId;
@@ -78,12 +78,12 @@ class PatientTrackingService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final notesJson = prefs.getStringList(_patientNotesKey) ?? [];
-      
+
       final notes = notesJson
           .map((json) => PatientNote.fromMap(jsonDecode(json)))
           .where((note) => note.patientId == patientId)
           .toList();
-      
+
       notes.sort((a, b) => a.dueDate.compareTo(b.dueDate));
       return notes;
     } catch (e) {
@@ -95,7 +95,7 @@ class PatientTrackingService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final notesJson = prefs.getStringList(_patientNotesKey) ?? [];
-      
+
       notesJson.add(jsonEncode(note.toMap()));
       await prefs.setStringList(_patientNotesKey, notesJson);
     } catch (e) {
@@ -107,7 +107,7 @@ class PatientTrackingService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final notesJson = prefs.getStringList(_patientNotesKey) ?? [];
-      
+
       final index = notesJson.indexWhere((json) {
         final existingNote = PatientNote.fromMap(jsonDecode(json));
         return existingNote.id == note.id;
@@ -126,7 +126,7 @@ class PatientTrackingService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final notesJson = prefs.getStringList(_patientNotesKey) ?? [];
-      
+
       notesJson.removeWhere((json) {
         final note = PatientNote.fromMap(jsonDecode(json));
         return note.id == noteId;
@@ -143,18 +143,20 @@ class PatientTrackingService {
     try {
       final medicalRecords = await getMedicalRecords(patientId);
       final notes = await getPatientNotes(patientId);
-      
+
       // Randevular için AppointmentService kullanılabilir
       final pendingNotes = notes.where((note) => !note.isCompleted).length;
       final completedTreatments = medicalRecords.length;
-      
+
       return {
         'totalRecords': medicalRecords.length,
         'pendingNotes': pendingNotes,
         'completedNotes': notes.length - pendingNotes,
-        'lastTreatment': medicalRecords.isNotEmpty ? medicalRecords.first.date : null,
-        'nextDueNote': notes.where((note) => !note.isCompleted).isNotEmpty 
-            ? notes.where((note) => !note.isCompleted).first.dueDate 
+        'lastTreatment': medicalRecords.isNotEmpty
+            ? medicalRecords.first.date
+            : null,
+        'nextDueNote': notes.where((note) => !note.isCompleted).isNotEmpty
+            ? notes.where((note) => !note.isCompleted).first.dueDate
             : null,
       };
     } catch (e) {

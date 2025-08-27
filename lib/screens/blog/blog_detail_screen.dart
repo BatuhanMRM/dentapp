@@ -7,10 +7,7 @@ import '../../services/blog_service.dart';
 class BlogDetailScreen extends StatefulWidget {
   final BlogPost post;
 
-  const BlogDetailScreen({
-    super.key,
-    required this.post,
-  });
+  const BlogDetailScreen({super.key, required this.post});
 
   @override
   State<BlogDetailScreen> createState() => _BlogDetailScreenState();
@@ -38,7 +35,9 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
   }
 
   Future<void> _loadRelatedPosts() async {
-    final allPosts = await _blogService.getBlogPostsByCategory(_currentPost.category);
+    final allPosts = await _blogService.getBlogPostsByCategory(
+      _currentPost.category,
+    );
     setState(() {
       _relatedPosts = allPosts
           .where((post) => post.id != _currentPost.id)
@@ -54,7 +53,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
         _isLiked = true;
         _currentPost = _currentPost.copyWith(likes: _currentPost.likes + 1);
       });
-      
+
       // Beğeni animasyonu
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -102,14 +101,11 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.blue[400]!,
-                          Colors.blue[700]!,
-                        ],
+                        colors: [Colors.blue[400]!, Colors.blue[700]!],
                       ),
                     ),
                   ),
-                  
+
                   // Dark Overlay
                   Container(
                     decoration: BoxDecoration(
@@ -123,7 +119,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                       ),
                     ),
                   ),
-                  
+
                   // Content
                   Positioned(
                     bottom: 60,
@@ -134,7 +130,10 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                       children: [
                         // Category Badge
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.orange[600],
                             borderRadius: BorderRadius.circular(20),
@@ -149,7 +148,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        
+
                         // Title
                         Text(
                           _currentPost.title,
@@ -174,7 +173,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
               ),
             ],
           ),
-          
+
           // Content
           SliverToBoxAdapter(
             child: Padding(
@@ -185,19 +184,19 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                   // Meta Information
                   _buildMetaInfo(),
                   const SizedBox(height: 24),
-                  
+
                   // Content
                   _buildContent(),
                   const SizedBox(height: 32),
-                  
+
                   // Tags
                   _buildTags(),
                   const SizedBox(height: 32),
-                  
+
                   // Action Buttons
                   _buildActionButtons(),
                   const SizedBox(height: 32),
-                  
+
                   // Related Posts
                   if (_relatedPosts.isNotEmpty) ...[
                     _buildRelatedPosts(),
@@ -249,11 +248,11 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                       ),
                     ),
                     Text(
-                      DateFormat('dd MMMM yyyy', 'tr').format(_currentPost.publishedAt),
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                      ),
+                      DateFormat(
+                        'dd MMMM yyyy',
+                        'tr',
+                      ).format(_currentPost.publishedAt),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     ),
                   ],
                 ),
@@ -261,12 +260,15 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          
+
           // Stats Row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildStatItem(Icons.access_time, '${_currentPost.readTimeMinutes} dk'),
+              _buildStatItem(
+                Icons.access_time,
+                '${_currentPost.readTimeMinutes} dk',
+              ),
               _buildStatItem(Icons.visibility, '${_currentPost.views}'),
               _buildStatItem(Icons.favorite, '${_currentPost.likes}'),
               if (_currentPost.updatedAt != null)
@@ -334,7 +336,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Main Content
           Text(
             _currentPost.content,
@@ -351,7 +353,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
 
   Widget _buildTags() {
     if (_currentPost.tags.isEmpty) return const SizedBox.shrink();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -413,7 +415,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
           ),
         ),
         const SizedBox(width: 12),
-        
+
         // Share Button
         Expanded(
           child: ElevatedButton.icon(
@@ -467,9 +469,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
       onTap: () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => BlogDetailScreen(post: post),
-          ),
+          MaterialPageRoute(builder: (context) => BlogDetailScreen(post: post)),
         );
       },
       child: Container(
@@ -492,7 +492,9 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
             Container(
               height: 100,
               decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
                 gradient: LinearGradient(
                   colors: [Colors.green[300]!, Colors.green[500]!],
                 ),
@@ -507,7 +509,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                 ),
               ),
             ),
-            
+
             // Content
             Expanded(
               child: Padding(
@@ -527,17 +529,18 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                     const SizedBox(height: 8),
                     Text(
                       post.excerpt,
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const Spacer(),
                     Row(
                       children: [
-                        Icon(Icons.access_time, size: 12, color: Colors.grey[500]),
+                        Icon(
+                          Icons.access_time,
+                          size: 12,
+                          color: Colors.grey[500],
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '${post.readTimeMinutes} dk',
@@ -547,7 +550,11 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                           ),
                         ),
                         const Spacer(),
-                        Icon(Icons.visibility, size: 12, color: Colors.grey[500]),
+                        Icon(
+                          Icons.visibility,
+                          size: 12,
+                          color: Colors.grey[500],
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '${post.views}',

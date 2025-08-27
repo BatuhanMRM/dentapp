@@ -14,14 +14,14 @@ class BlogScreen extends StatefulWidget {
 class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
   final BlogService _blogService = BlogService();
   late TabController _tabController;
-  
+
   List<BlogPost> _allPosts = [];
   List<BlogPost> _featuredPosts = [];
   List<BlogPost> _filteredPosts = [];
   List<String> _categories = [];
   String _selectedCategory = 'Tümü';
   bool _isLoading = true;
-  
+
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -43,7 +43,7 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
       final posts = await _blogService.getBlogPosts();
       final featured = await _blogService.getFeaturedPosts();
       final categories = _blogService.getCategories();
-      
+
       setState(() {
         _allPosts = posts;
         _featuredPosts = featured;
@@ -69,7 +69,9 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
       if (category == 'Tümü') {
         _filteredPosts = _allPosts;
       } else {
-        _filteredPosts = _allPosts.where((post) => post.category == category).toList();
+        _filteredPosts = _allPosts
+            .where((post) => post.category == category)
+            .toList();
       }
     });
   }
@@ -79,7 +81,7 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
       _filterByCategory(_selectedCategory);
       return;
     }
-    
+
     final results = await _blogService.searchBlogPosts(query);
     setState(() {
       _filteredPosts = results;
@@ -135,7 +137,7 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
             // Arama Kutusu
             _buildSearchBox(),
             const SizedBox(height: 20),
-            
+
             // Öne Çıkan Yazılar
             if (_featuredPosts.isNotEmpty) ...[
               _buildSectionTitle('Öne Çıkan Yazılar', Icons.star),
@@ -143,7 +145,7 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
               _buildFeaturedPosts(),
               const SizedBox(height: 24),
             ],
-            
+
             // Son Yazılar
             _buildSectionTitle('Son Yazılar', Icons.article),
             const SizedBox(height: 12),
@@ -163,7 +165,7 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
           // Kategori Filtreleri
           _buildCategoryFilter(),
           const SizedBox(height: 20),
-          
+
           // Filtrelenmiş Yazılar
           _filteredPosts.isEmpty
               ? _buildEmptyState()
@@ -171,7 +173,8 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: _filteredPosts.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 16),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 16),
                   itemBuilder: (context, index) {
                     return _buildBlogCard(_filteredPosts[index]);
                   },
@@ -188,11 +191,11 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        
+
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return _buildEmptyState();
         }
-        
+
         return ListView.separated(
           padding: const EdgeInsets.all(16),
           itemCount: snapshot.data!.length,
@@ -234,7 +237,10 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
                 )
               : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
         ),
         onChanged: _searchPosts,
       ),
@@ -297,14 +303,11 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.blue[400]!,
-                      Colors.blue[600]!,
-                    ],
+                    colors: [Colors.blue[400]!, Colors.blue[600]!],
                   ),
                 ),
               ),
-              
+
               // İçerik
               Positioned(
                 bottom: 0,
@@ -326,7 +329,10 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.orange[600],
                           borderRadius: BorderRadius.circular(12),
@@ -354,10 +360,7 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
                       const SizedBox(height: 4),
                       Text(
                         post.excerpt,
-                        style: TextStyle(
-                          color: Colors.grey[300],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[300], fontSize: 12),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -374,7 +377,7 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
 
   Widget _buildRecentPosts() {
     final recentPosts = _allPosts.take(5).toList();
-    
+
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -396,7 +399,7 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
         itemBuilder: (context, index) {
           final category = _categories[index];
           final isSelected = category == _selectedCategory;
-          
+
           return GestureDetector(
             onTap: () => _filterByCategory(category),
             child: Container(
@@ -444,7 +447,9 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
             Container(
               height: 150,
               decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
                 gradient: LinearGradient(
                   colors: [Colors.blue[300]!, Colors.blue[500]!],
                 ),
@@ -455,7 +460,10 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
                     top: 12,
                     left: 12,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.9),
                         borderRadius: BorderRadius.circular(12),
@@ -490,7 +498,7 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
                 ],
               ),
             ),
-            
+
             // Content
             Padding(
               padding: const EdgeInsets.all(16),
@@ -509,15 +517,12 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
                   const SizedBox(height: 8),
                   Text(
                     post.excerpt,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 12),
-                  
+
                   // Meta Info
                   Row(
                     children: [
@@ -525,25 +530,23 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
                       const SizedBox(width: 4),
                       Text(
                         post.authorName,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
                       ),
                       const Spacer(),
-                      Icon(Icons.access_time, size: 14, color: Colors.grey[500]),
+                      Icon(
+                        Icons.access_time,
+                        size: 14,
+                        color: Colors.grey[500],
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         '${post.readTimeMinutes} dk',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  
+
                   // Stats
                   Row(
                     children: [
@@ -551,28 +554,19 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
                       const SizedBox(width: 4),
                       Text(
                         '${post.views}',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
                       ),
                       const SizedBox(width: 16),
                       Icon(Icons.favorite, size: 14, color: Colors.red[300]),
                       const SizedBox(width: 4),
                       Text(
                         '${post.likes}',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
                       ),
                       const Spacer(),
                       Text(
                         DateFormat('dd MMM', 'tr').format(post.publishedAt),
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[500], fontSize: 12),
                       ),
                     ],
                   ),
@@ -623,7 +617,7 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
               ),
             ),
             const SizedBox(width: 16),
-            
+
             // Content
             Expanded(
               child: Column(
@@ -654,20 +648,14 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
                       const SizedBox(width: 4),
                       Text(
                         '${post.views} görüntülenme',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
                       ),
                       const SizedBox(width: 16),
                       Icon(Icons.favorite, size: 14, color: Colors.red[300]),
                       const SizedBox(width: 4),
                       Text(
                         '${post.likes} beğeni',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
                       ),
                     ],
                   ),
@@ -685,11 +673,7 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.article_outlined,
-            size: 80,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.article_outlined, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             'Henüz blog yazısı yok',
@@ -702,10 +686,7 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
           const SizedBox(height: 8),
           Text(
             'Yakında harika içeriklerle karşınızda olacağız',
-            style: TextStyle(
-              color: Colors.grey[500],
-              fontSize: 14,
-            ),
+            style: TextStyle(color: Colors.grey[500], fontSize: 14),
             textAlign: TextAlign.center,
           ),
         ],
@@ -716,9 +697,7 @@ class _BlogScreenState extends State<BlogScreen> with TickerProviderStateMixin {
   void _navigateToDetail(BlogPost post) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => BlogDetailScreen(post: post),
-      ),
+      MaterialPageRoute(builder: (context) => BlogDetailScreen(post: post)),
     );
   }
 }

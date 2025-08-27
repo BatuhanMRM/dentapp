@@ -84,7 +84,8 @@ class DemoDataService {
           doctorId: 'demo_doctor_1',
           doctorName: 'Dr. Ayşe Yılmaz',
           title: 'Diş Fırçalama Hatırlatması',
-          content: 'Günde en az 2 kez diş fırçalamayı ve diş ipi kullanmayı unutmayın',
+          content:
+              'Günde en az 2 kez diş fırçalamayı ve diş ipi kullanmayı unutmayın',
           type: PatientNoteType.reminder,
           isCompleted: false,
           dueDate: DateTime.now().add(const Duration(days: 1)),
@@ -96,7 +97,8 @@ class DemoDataService {
           doctorId: 'demo_doctor_2',
           doctorName: 'Dr. Mehmet Kaya',
           title: 'Tedavi Takibi',
-          content: 'Dolgu sonrası herhangi bir hassasiyet yaşanırsa hemen başvurun',
+          content:
+              'Dolgu sonrası herhangi bir hassasiyet yaşanırsa hemen başvurun',
           type: PatientNoteType.followUp,
           isCompleted: false,
           dueDate: DateTime.now().add(const Duration(days: 14)),
@@ -112,7 +114,6 @@ class DemoDataService {
       for (final note in demoNotes) {
         await _patientTrackingService.addPatientNote(note);
       }
-
     } catch (e) {
       throw Exception('Demo veri eklenirken hata: $e');
     }

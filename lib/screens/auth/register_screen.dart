@@ -49,7 +49,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _phoneController.text.trim(),
         _passwordController.text,
         _selectedUserType,
-        _selectedUserType == UserType.doctor ? _specialtyController.text.trim() : null,
+        _selectedUserType == UserType.doctor
+            ? _specialtyController.text.trim()
+            : null,
       );
 
       if (mounted) {

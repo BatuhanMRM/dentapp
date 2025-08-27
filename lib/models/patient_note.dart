@@ -83,10 +83,4 @@ class PatientNote {
   }
 }
 
-enum PatientNoteType {
-  general,
-  reminder,
-  treatment,
-  prescription,
-  followUp
-}
+enum PatientNoteType { general, reminder, treatment, prescription, followUp }

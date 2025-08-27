@@ -3,8 +3,11 @@ import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:intl/intl.dart';
 import '../../services/appointment_service.dart';
 import '../../services/auth_service.dart';
+import '../../services/payment_service.dart';
 import '../../models/appointment.dart';
 import '../../models/user.dart';
+import '../../models/payment.dart';
+import '../payment/payment_screen.dart';
 
 class CreateAppointmentScreen extends StatefulWidget {
   final String userId;
@@ -23,6 +26,7 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
   final _notesController = TextEditingController();
   final _appointmentService = AppointmentService();
   final _authService = AuthService();
+  final _paymentService = PaymentService();
 
   DateTime? _selectedDate;
   String? _selectedTimeSlot;
@@ -53,7 +57,7 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
       setState(() {
         _doctors = doctors;
       });
-      
+
       // Doktor bulunamadıysa uyarı ver
       if (doctors.isEmpty && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -155,12 +159,16 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
 
     // Doktorun hala kayıtlı olduğunu kontrol et
     final currentDoctors = await _authService.getDoctors();
-    final doctorStillExists = currentDoctors.any((doc) => doc.id == _selectedDoctor!.id);
-    
+    final doctorStillExists = currentDoctors.any(
+      (doc) => doc.id == _selectedDoctor!.id,
+    );
+
     if (!doctorStillExists) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Seçilen doktor artık kayıtlı değil. Lütfen başka bir doktor seçin'),
+          content: Text(
+            'Seçilen doktor artık kayıtlı değil. Lütfen başka bir doktor seçin',
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -199,7 +207,9 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.of(context).pop(true);
+
+        // Ödeme seçeneği sun
+        _showPaymentOption(appointment);
       }
     } catch (e) {
       if (mounted) {
@@ -458,7 +468,11 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         child: Column(
                           children: [
-                            Icon(Icons.warning, color: Colors.orange[600], size: 24),
+                            Icon(
+                              Icons.warning,
+                              color: Colors.orange[600],
+                              size: 24,
+                            ),
                             const SizedBox(height: 8),
                             Text(
                               'Kayıtlı doktor bulunamadı',
@@ -492,7 +506,9 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
                                 children: [
                                   Text(
                                     doctor.name,
-                                    style: const TextStyle(fontWeight: FontWeight.w500),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                   if (doctor.specialty != null)
                                     Text(
@@ -506,34 +522,44 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
                               ),
                             );
                           }).toList(),
-                          onChanged: _doctors.isEmpty ? null : (User? value) async {
-                            // Seçilen doktorun hala geçerli olduğunu kontrol et
-                            if (value != null) {
-                              final currentDoctors = await _authService.getDoctors();
-                              final doctorExists = currentDoctors.any((doc) => doc.id == value.id);
-                              
-                              if (!doctorExists) {
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Bu doktor artık kayıtlı değil'),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
-                                }
-                                return;
-                              }
-                            }
-                            
-                            setState(() {
-                              _selectedDoctor = value;
-                              _selectedTimeSlot = null; // Saat seçimini sıfırla
-                            });
-                            // Doktor değiştiğinde müsait saatleri yeniden yükle
-                            if (_selectedDate != null) {
-                              await _loadAvailableTimeSlots();
-                            }
-                          },
+                          onChanged: _doctors.isEmpty
+                              ? null
+                              : (User? value) async {
+                                  // Seçilen doktorun hala geçerli olduğunu kontrol et
+                                  if (value != null) {
+                                    final currentDoctors = await _authService
+                                        .getDoctors();
+                                    final doctorExists = currentDoctors.any(
+                                      (doc) => doc.id == value.id,
+                                    );
+
+                                    if (!doctorExists) {
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Bu doktor artık kayıtlı değil',
+                                            ),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                      }
+                                      return;
+                                    }
+                                  }
+
+                                  setState(() {
+                                    _selectedDoctor = value;
+                                    _selectedTimeSlot =
+                                        null; // Saat seçimini sıfırla
+                                  });
+                                  // Doktor değiştiğinde müsait saatleri yeniden yükle
+                                  if (_selectedDate != null) {
+                                    await _loadAvailableTimeSlots();
+                                  }
+                                },
                           isExpanded: true,
                         ),
                       ),
@@ -552,7 +578,11 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.check_circle, color: Colors.green[600], size: 16),
+                    Icon(
+                      Icons.check_circle,
+                      color: Colors.green[600],
+                      size: 16,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       'Doktor seçildi',
@@ -674,5 +704,117 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
           ),
       ],
     );
+  }
+
+  Future<void> _showPaymentOption(Appointment appointment) async {
+    final settings = await _paymentService.getPaymentSettings();
+    final depositAmount = await _paymentService.calculateAppointmentDeposit(
+      appointment.treatmentType,
+    );
+
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.payment, color: Colors.blue),
+            SizedBox(width: 8),
+            Text('Ödeme Seçeneği'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Randevunuz başarıyla oluşturuldu!',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.green,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text('Şimdi ne yapmak istersiniz?'),
+            const SizedBox(height: 16),
+
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue[200]!),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.account_balance_wallet,
+                        color: Colors.blue[600],
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Kapora Ödemesi',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Randevunuzu garanti altına almak için ${depositAmount.toStringAsFixed(2)} ${settings.currency} kapora ödeyebilirsiniz.',
+                    style: const TextStyle(fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context, true);
+            },
+            child: const Text('Şimdi Değil'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.pop(context);
+              _navigateToPayment(appointment, PaymentType.appointmentDeposit);
+            },
+            icon: const Icon(Icons.payment),
+            label: const Text('Kapora Öde'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue[600],
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _navigateToPayment(Appointment appointment, PaymentType paymentType) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            PaymentScreen(appointment: appointment, paymentType: paymentType),
+      ),
+    ).then((paymentResult) {
+      if (paymentResult == true) {
+        // Ödeme başarılı, ana ekrana dön
+        Navigator.pop(context, true);
+      } else {
+        // Ödeme yapılmadı, yine de ana ekrana dön
+        Navigator.pop(context, true);
+      }
+    });
   }
 }

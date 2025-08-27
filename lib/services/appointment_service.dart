@@ -49,7 +49,9 @@ class AppointmentService {
       );
 
       if (conflictingAppointment) {
-        throw Exception('Bu doktor için bu tarih ve saatte zaten bir randevu bulunmaktadır');
+        throw Exception(
+          'Bu doktor için bu tarih ve saatte zaten bir randevu bulunmaktadır',
+        );
       }
 
       appointments.add(appointment);
@@ -143,7 +145,10 @@ class AppointmentService {
   }
 
   // Belirli bir doktor için belirli bir tarihte dolu saatleri getir
-  Future<List<String>> getBookedTimeSlotsForDoctor(DateTime date, String doctorId) async {
+  Future<List<String>> getBookedTimeSlotsForDoctor(
+    DateTime date,
+    String doctorId,
+  ) async {
     final appointments = await getAppointments();
     return appointments
         .where(

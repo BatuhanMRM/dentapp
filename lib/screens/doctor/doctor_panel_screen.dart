@@ -36,9 +36,9 @@ class _DoctorPanelScreenState extends State<DoctorPanelScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Veri yüklenirken hata: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Veri yüklenirken hata: $e')));
       }
     } finally {
       setState(() {
@@ -73,15 +73,20 @@ class _DoctorPanelScreenState extends State<DoctorPanelScreen> {
     _applyFilter();
   }
 
-  Future<void> _updateAppointmentStatus(Appointment appointment, AppointmentStatus newStatus) async {
+  Future<void> _updateAppointmentStatus(
+    Appointment appointment,
+    AppointmentStatus newStatus,
+  ) async {
     try {
       final updatedAppointment = appointment.copyWith(status: newStatus);
       await _appointmentService.updateAppointment(updatedAppointment);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Randevu durumu güncellendi: ${_getStatusText(newStatus)}'),
+            content: Text(
+              'Randevu durumu güncellendi: ${_getStatusText(newStatus)}',
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -147,7 +152,9 @@ class _DoctorPanelScreenState extends State<DoctorPanelScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text('Dr. ${_currentUser?.name ?? 'Kullanıcı'} - Randevu Paneli'),
+        title: Text(
+          'Dr. ${_currentUser?.name ?? 'Kullanıcı'} - Randevu Paneli',
+        ),
         backgroundColor: Colors.green[700],
         foregroundColor: Colors.white,
         actions: [
@@ -161,12 +168,17 @@ class _DoctorPanelScreenState extends State<DoctorPanelScreen> {
                   children: [
                     if (_filterStatus == AppointmentStatus.all)
                       const Icon(Icons.check, size: 16, color: Colors.green),
-                    if (_filterStatus == AppointmentStatus.all) const SizedBox(width: 8),
+                    if (_filterStatus == AppointmentStatus.all)
+                      const SizedBox(width: 8),
                     Text(
                       'Tümü',
                       style: TextStyle(
-                        fontWeight: _filterStatus == AppointmentStatus.all ? FontWeight.bold : FontWeight.normal,
-                        color: _filterStatus == AppointmentStatus.all ? Colors.green : Colors.black,
+                        fontWeight: _filterStatus == AppointmentStatus.all
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: _filterStatus == AppointmentStatus.all
+                            ? Colors.green
+                            : Colors.black,
                       ),
                     ),
                   ],
@@ -183,8 +195,12 @@ class _DoctorPanelScreenState extends State<DoctorPanelScreen> {
                     Text(
                       'Bekliyor',
                       style: TextStyle(
-                        fontWeight: _filterStatus == AppointmentStatus.pending ? FontWeight.bold : FontWeight.normal,
-                        color: _filterStatus == AppointmentStatus.pending ? Colors.green : Colors.black,
+                        fontWeight: _filterStatus == AppointmentStatus.pending
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: _filterStatus == AppointmentStatus.pending
+                            ? Colors.green
+                            : Colors.black,
                       ),
                     ),
                   ],
@@ -201,8 +217,12 @@ class _DoctorPanelScreenState extends State<DoctorPanelScreen> {
                     Text(
                       'Onaylandı',
                       style: TextStyle(
-                        fontWeight: _filterStatus == AppointmentStatus.confirmed ? FontWeight.bold : FontWeight.normal,
-                        color: _filterStatus == AppointmentStatus.confirmed ? Colors.green : Colors.black,
+                        fontWeight: _filterStatus == AppointmentStatus.confirmed
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: _filterStatus == AppointmentStatus.confirmed
+                            ? Colors.green
+                            : Colors.black,
                       ),
                     ),
                   ],
@@ -219,8 +239,12 @@ class _DoctorPanelScreenState extends State<DoctorPanelScreen> {
                     Text(
                       'Tamamlandı',
                       style: TextStyle(
-                        fontWeight: _filterStatus == AppointmentStatus.completed ? FontWeight.bold : FontWeight.normal,
-                        color: _filterStatus == AppointmentStatus.completed ? Colors.green : Colors.black,
+                        fontWeight: _filterStatus == AppointmentStatus.completed
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: _filterStatus == AppointmentStatus.completed
+                            ? Colors.green
+                            : Colors.black,
                       ),
                     ),
                   ],
@@ -237,8 +261,12 @@ class _DoctorPanelScreenState extends State<DoctorPanelScreen> {
                     Text(
                       'İptal Edildi',
                       style: TextStyle(
-                        fontWeight: _filterStatus == AppointmentStatus.cancelled ? FontWeight.bold : FontWeight.normal,
-                        color: _filterStatus == AppointmentStatus.cancelled ? Colors.green : Colors.black,
+                        fontWeight: _filterStatus == AppointmentStatus.cancelled
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: _filterStatus == AppointmentStatus.cancelled
+                            ? Colors.green
+                            : Colors.black,
                       ),
                     ),
                   ],
@@ -392,7 +420,10 @@ class _DoctorPanelScreenState extends State<DoctorPanelScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        DateFormat('dd MMMM yyyy', 'tr').format(appointment.appointmentDate),
+                        DateFormat(
+                          'dd MMMM yyyy',
+                          'tr',
+                        ).format(appointment.appointmentDate),
                         style: TextStyle(color: Colors.grey[600]),
                       ),
                       const SizedBox(width: 16),
@@ -443,7 +474,10 @@ class _DoctorPanelScreenState extends State<DoctorPanelScreen> {
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () => _updateAppointmentStatus(appointment, AppointmentStatus.cancelled),
+                            onPressed: () => _updateAppointmentStatus(
+                              appointment,
+                              AppointmentStatus.cancelled,
+                            ),
                             icon: const Icon(Icons.cancel, size: 18),
                             label: const Text('Reddet'),
                             style: OutlinedButton.styleFrom(
@@ -458,7 +492,10 @@ class _DoctorPanelScreenState extends State<DoctorPanelScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () => _updateAppointmentStatus(appointment, AppointmentStatus.confirmed),
+                            onPressed: () => _updateAppointmentStatus(
+                              appointment,
+                              AppointmentStatus.confirmed,
+                            ),
                             icon: const Icon(Icons.check, size: 18),
                             label: const Text('Onayla'),
                             style: ElevatedButton.styleFrom(
@@ -479,7 +516,10 @@ class _DoctorPanelScreenState extends State<DoctorPanelScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () => _updateAppointmentStatus(appointment, AppointmentStatus.completed),
+                        onPressed: () => _updateAppointmentStatus(
+                          appointment,
+                          AppointmentStatus.completed,
+                        ),
                         icon: const Icon(Icons.done_all, size: 18),
                         label: const Text('Tamamlandı Olarak İşaretle'),
                         style: ElevatedButton.styleFrom(

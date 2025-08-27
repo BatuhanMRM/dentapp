@@ -152,12 +152,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     if (_filterStatus == AppointmentStatus.all)
                       const Icon(Icons.check, size: 16, color: Colors.blue),
-                    if (_filterStatus == AppointmentStatus.all) const SizedBox(width: 8),
+                    if (_filterStatus == AppointmentStatus.all)
+                      const SizedBox(width: 8),
                     Text(
                       'Tümü',
                       style: TextStyle(
-                        fontWeight: _filterStatus == AppointmentStatus.all ? FontWeight.bold : FontWeight.normal,
-                        color: _filterStatus == AppointmentStatus.all ? Colors.blue : Colors.black,
+                        fontWeight: _filterStatus == AppointmentStatus.all
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: _filterStatus == AppointmentStatus.all
+                            ? Colors.blue
+                            : Colors.black,
                       ),
                     ),
                   ],
@@ -174,8 +179,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       'Bekliyor',
                       style: TextStyle(
-                        fontWeight: _filterStatus == AppointmentStatus.pending ? FontWeight.bold : FontWeight.normal,
-                        color: _filterStatus == AppointmentStatus.pending ? Colors.blue : Colors.black,
+                        fontWeight: _filterStatus == AppointmentStatus.pending
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: _filterStatus == AppointmentStatus.pending
+                            ? Colors.blue
+                            : Colors.black,
                       ),
                     ),
                   ],
@@ -192,8 +201,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       'Onaylandı',
                       style: TextStyle(
-                        fontWeight: _filterStatus == AppointmentStatus.confirmed ? FontWeight.bold : FontWeight.normal,
-                        color: _filterStatus == AppointmentStatus.confirmed ? Colors.blue : Colors.black,
+                        fontWeight: _filterStatus == AppointmentStatus.confirmed
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: _filterStatus == AppointmentStatus.confirmed
+                            ? Colors.blue
+                            : Colors.black,
                       ),
                     ),
                   ],
@@ -210,8 +223,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       'Tamamlandı',
                       style: TextStyle(
-                        fontWeight: _filterStatus == AppointmentStatus.completed ? FontWeight.bold : FontWeight.normal,
-                        color: _filterStatus == AppointmentStatus.completed ? Colors.blue : Colors.black,
+                        fontWeight: _filterStatus == AppointmentStatus.completed
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: _filterStatus == AppointmentStatus.completed
+                            ? Colors.blue
+                            : Colors.black,
                       ),
                     ),
                   ],
@@ -228,8 +245,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       'İptal Edildi',
                       style: TextStyle(
-                        fontWeight: _filterStatus == AppointmentStatus.cancelled ? FontWeight.bold : FontWeight.normal,
-                        color: _filterStatus == AppointmentStatus.cancelled ? Colors.blue : Colors.black,
+                        fontWeight: _filterStatus == AppointmentStatus.cancelled
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: _filterStatus == AppointmentStatus.cancelled
+                            ? Colors.blue
+                            : Colors.black,
                       ),
                     ),
                   ],

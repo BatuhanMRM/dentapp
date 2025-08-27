@@ -42,7 +42,9 @@ class BlogPost {
       imageUrl: json['imageUrl'],
       authorName: json['authorName'],
       publishedAt: DateTime.parse(json['publishedAt']),
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
+          : null,
       readTimeMinutes: json['readTimeMinutes'],
       isFeatured: json['isFeatured'] ?? false,
       views: json['views'] ?? 0,

@@ -31,7 +31,8 @@ class AuthService {
         throw Exception('Şifre en az 6 karakter olmalıdır');
       }
 
-      if (userType == models.UserType.doctor && (specialty == null || specialty.isEmpty)) {
+      if (userType == models.UserType.doctor &&
+          (specialty == null || specialty.isEmpty)) {
         throw Exception('Doktor için uzmanlık alanı gereklidir');
       }
 
@@ -58,11 +59,11 @@ class AuthService {
 
         // SharedPreferences'a kaydet
         final prefs = await SharedPreferences.getInstance();
-        
+
         // Kullanıcıya özel key ile kaydet
         final userSpecificKey = 'user_${credential.user!.uid}';
         await prefs.setString(userSpecificKey, userToJson(user));
-        
+
         // Aktif kullanıcı olarak da kaydet
         await prefs.setString(_userKey, userToJson(user));
         await prefs.setBool(_isLoggedInKey, true);
@@ -114,7 +115,7 @@ class AuthService {
       if (credential.user != null) {
         // Kullanıcı bilgilerini al
         final prefs = await SharedPreferences.getInstance();
-        
+
         // Kullanıcıya özel key oluştur
         final userSpecificKey = 'user_${credential.user!.uid}';
         String? userData = prefs.getString(userSpecificKey);
@@ -266,10 +267,13 @@ class AuthService {
   Future<List<models.User>> getDoctors() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final userKeys = prefs.getKeys().where((key) => key.startsWith('user_')).toList();
-      
+      final userKeys = prefs
+          .getKeys()
+          .where((key) => key.startsWith('user_'))
+          .toList();
+
       final List<models.User> doctors = [];
-      
+
       for (String key in userKeys) {
         final userJson = prefs.getString(key);
         if (userJson != null) {
@@ -279,7 +283,7 @@ class AuthService {
           }
         }
       }
-      
+
       return doctors;
     } catch (e) {
       return [];

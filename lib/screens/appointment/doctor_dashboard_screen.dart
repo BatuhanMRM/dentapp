@@ -32,7 +32,9 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
   Future<void> _loadAppointments() async {
     try {
       // Sadece bu doktora ait randevuları getir
-      final appointments = await _appointmentService.getDoctorAppointments(widget.doctor.id);
+      final appointments = await _appointmentService.getDoctorAppointments(
+        widget.doctor.id,
+      );
       setState(() {
         _appointments = appointments;
         _applyFilter();
@@ -59,7 +61,9 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
           .toList();
     }
     // Tarihe göre sırala (en yakın tarih önce)
-    _filteredAppointments.sort((a, b) => a.appointmentDate.compareTo(b.appointmentDate));
+    _filteredAppointments.sort(
+      (a, b) => a.appointmentDate.compareTo(b.appointmentDate),
+    );
   }
 
   void _changeFilter(AppointmentStatus status) {
@@ -80,9 +84,9 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Çıkış yaparken hata: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Çıkış yaparken hata: $e')));
       }
     }
   }
@@ -117,13 +121,18 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
     }
   }
 
-  Future<void> _updateAppointmentStatus(Appointment appointment, AppointmentStatus newStatus) async {
+  Future<void> _updateAppointmentStatus(
+    Appointment appointment,
+    AppointmentStatus newStatus,
+  ) async {
     try {
       final updatedAppointment = appointment.copyWith(status: newStatus);
       await _appointmentService.updateAppointment(updatedAppointment);
-      
+
       setState(() {
-        final index = _appointments.indexWhere((apt) => apt.id == appointment.id);
+        final index = _appointments.indexWhere(
+          (apt) => apt.id == appointment.id,
+        );
         if (index != -1) {
           _appointments[index] = updatedAppointment;
         }
@@ -133,7 +142,9 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Randevu durumu güncellendi: ${_getStatusText(newStatus)}'),
+            content: Text(
+              'Randevu durumu güncellendi: ${_getStatusText(newStatus)}',
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -153,9 +164,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -175,11 +184,14 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                   children: [
                     if (_filterStatus == AppointmentStatus.all)
                       const Icon(Icons.check, size: 16, color: Colors.green),
-                    if (_filterStatus == AppointmentStatus.all) const SizedBox(width: 8),
+                    if (_filterStatus == AppointmentStatus.all)
+                      const SizedBox(width: 8),
                     Text(
                       'Tümü',
                       style: TextStyle(
-                        fontWeight: _filterStatus == AppointmentStatus.all ? FontWeight.bold : FontWeight.normal,
+                        fontWeight: _filterStatus == AppointmentStatus.all
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                       ),
                     ),
                   ],
@@ -191,7 +203,8 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                   children: [
                     if (_filterStatus == AppointmentStatus.pending)
                       const Icon(Icons.check, size: 16, color: Colors.green),
-                    if (_filterStatus == AppointmentStatus.pending) const SizedBox(width: 8),
+                    if (_filterStatus == AppointmentStatus.pending)
+                      const SizedBox(width: 8),
                     const Text('Bekliyor'),
                   ],
                 ),
@@ -202,7 +215,8 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                   children: [
                     if (_filterStatus == AppointmentStatus.confirmed)
                       const Icon(Icons.check, size: 16, color: Colors.green),
-                    if (_filterStatus == AppointmentStatus.confirmed) const SizedBox(width: 8),
+                    if (_filterStatus == AppointmentStatus.confirmed)
+                      const SizedBox(width: 8),
                     const Text('Onaylandı'),
                   ],
                 ),
@@ -213,7 +227,8 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                   children: [
                     if (_filterStatus == AppointmentStatus.completed)
                       const Icon(Icons.check, size: 16, color: Colors.green),
-                    if (_filterStatus == AppointmentStatus.completed) const SizedBox(width: 8),
+                    if (_filterStatus == AppointmentStatus.completed)
+                      const SizedBox(width: 8),
                     const Text('Tamamlandı'),
                   ],
                 ),
@@ -224,7 +239,8 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                   children: [
                     if (_filterStatus == AppointmentStatus.cancelled)
                       const Icon(Icons.check, size: 16, color: Colors.green),
-                    if (_filterStatus == AppointmentStatus.cancelled) const SizedBox(width: 8),
+                    if (_filterStatus == AppointmentStatus.cancelled)
+                      const SizedBox(width: 8),
                     const Text('İptal Edildi'),
                   ],
                 ),
@@ -238,7 +254,9 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                 context: context,
                 builder: (context) => AlertDialog(
                   title: const Text('Çıkış Yap'),
-                  content: const Text('Çıkış yapmak istediğinizden emin misiniz?'),
+                  content: const Text(
+                    'Çıkış yapmak istediğinizden emin misiniz?',
+                  ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
@@ -269,8 +287,8 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
   }
 
   Widget _buildEmptyState() {
-    String message = _filterStatus == AppointmentStatus.all 
-        ? 'Henüz randevu yok' 
+    String message = _filterStatus == AppointmentStatus.all
+        ? 'Henüz randevu yok'
         : '${_getStatusText(_filterStatus)} durumunda randevu yok';
 
     return Center(
@@ -357,10 +375,17 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]),
+                    Icon(
+                      Icons.calendar_today,
+                      size: 16,
+                      color: Colors.grey[600],
+                    ),
                     const SizedBox(width: 8),
                     Text(
-                      DateFormat('dd MMMM yyyy', 'tr').format(appointment.appointmentDate),
+                      DateFormat(
+                        'dd MMMM yyyy',
+                        'tr',
+                      ).format(appointment.appointmentDate),
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                     const SizedBox(width: 16),
@@ -399,7 +424,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                     ],
                   ),
                 ],
-                
+
                 // Action Buttons for Doctor
                 if (appointment.status == AppointmentStatus.pending) ...[
                   const SizedBox(height: 16),
@@ -407,7 +432,10 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                     children: [
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () => _updateAppointmentStatus(appointment, AppointmentStatus.cancelled),
+                          onPressed: () => _updateAppointmentStatus(
+                            appointment,
+                            AppointmentStatus.cancelled,
+                          ),
                           icon: const Icon(Icons.cancel_outlined, size: 18),
                           label: const Text('Reddet'),
                           style: OutlinedButton.styleFrom(
@@ -422,7 +450,10 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton.icon(
-                          onPressed: () => _updateAppointmentStatus(appointment, AppointmentStatus.confirmed),
+                          onPressed: () => _updateAppointmentStatus(
+                            appointment,
+                            AppointmentStatus.confirmed,
+                          ),
                           icon: const Icon(Icons.check, size: 18),
                           label: const Text('Onayla'),
                           style: ElevatedButton.styleFrom(
@@ -442,7 +473,10 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: () => _updateAppointmentStatus(appointment, AppointmentStatus.completed),
+                      onPressed: () => _updateAppointmentStatus(
+                        appointment,
+                        AppointmentStatus.completed,
+                      ),
                       icon: const Icon(Icons.done_all, size: 18),
                       label: const Text('Tamamlandı Olarak İşaretle'),
                       style: ElevatedButton.styleFrom(
