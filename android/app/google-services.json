@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "985211708985",
+    "project_id": "dentapp-d1e70",
+    "storage_bucket": "dentapp-d1e70.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:985211708985:android:598496e7f136ee17cb0fe8",
+        "android_client_info": {
+          "package_name": "DentApp.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeLNfcIvT0DV1VOaSZWw2M468Ue1fHKjg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:985211708985:android:31b5e9475a7e2ceecb0fe8",
+        "android_client_info": {
+          "package_name": "com.example.dentapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeLNfcIvT0DV1VOaSZWw2M468Ue1fHKjg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
