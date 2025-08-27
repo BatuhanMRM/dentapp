@@ -5,6 +5,7 @@ import '../../services/appointment_service.dart';
 import '../../models/appointment.dart';
 import '../../models/user.dart';
 import '../auth/login_screen.dart';
+import 'add_patient_note_screen.dart';
 
 class DoctorPanelScreen extends StatefulWidget {
   const DoctorPanelScreen({super.key});
@@ -143,6 +144,19 @@ class _DoctorPanelScreenState extends State<DoctorPanelScreen> {
     }
   }
 
+  Future<void> _navigateToAddNote() async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const AddPatientNoteScreen(),
+      ),
+    );
+    
+    if (result == true) {
+      // Not eklendi, veriyi yenile
+      await _loadAllAppointments();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -273,6 +287,11 @@ class _DoctorPanelScreenState extends State<DoctorPanelScreen> {
                 ),
               ),
             ],
+          ),
+          IconButton(
+            icon: const Icon(Icons.note_add),
+            tooltip: 'Hastalara Not Yaz',
+            onPressed: _navigateToAddNote,
           ),
           IconButton(icon: const Icon(Icons.logout), onPressed: _logout),
         ],

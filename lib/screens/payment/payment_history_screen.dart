@@ -78,21 +78,27 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
         backgroundColor: Colors.green[700],
         foregroundColor: Colors.white,
         actions: [
-          PopupMenuButton<PaymentStatus?>(
+          PopupMenuButton<String>(
             icon: const Icon(Icons.filter_list),
-            onSelected: (status) {
+            onSelected: (value) {
               setState(() {
-                _filterStatus = status;
+                if (value == 'all') {
+                  _filterStatus = null;
+                } else {
+                  _filterStatus = PaymentStatus.values.firstWhere(
+                    (status) => status.toString().split('.').last == value,
+                  );
+                }
               });
             },
             itemBuilder: (context) => [
-              const PopupMenuItem<PaymentStatus?>(
-                value: null,
+              const PopupMenuItem<String>(
+                value: 'all',
                 child: Text('Tümü'),
               ),
               ...PaymentStatus.values.map(
-                (status) => PopupMenuItem<PaymentStatus?>(
-                  value: status,
+                (status) => PopupMenuItem<String>(
+                  value: status.toString().split('.').last,
                   child: Text(status.statusDisplayName),
                 ),
               ),

@@ -290,6 +290,31 @@ class AuthService {
     }
   }
 
+  // Tüm kullanıcıları getir
+  Future<List<models.User>> getAllUsers() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userKeys = prefs
+          .getKeys()
+          .where((key) => key.startsWith('user_'))
+          .toList();
+
+      final List<models.User> users = [];
+
+      for (String key in userKeys) {
+        final userJson = prefs.getString(key);
+        if (userJson != null) {
+          final user = userFromJson(userJson);
+          users.add(user);
+        }
+      }
+
+      return users;
+    } catch (e) {
+      return [];
+    }
+  }
+
   // JSON helper methods
   String userToJson(models.User user) {
     return '${user.id}|${user.name}|${user.email}|${user.phone}|${user.userType.toString().split('.').last}|${user.specialty ?? ''}|${user.createdAt.toIso8601String()}';

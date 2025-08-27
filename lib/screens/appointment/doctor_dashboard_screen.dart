@@ -4,6 +4,7 @@ import '../../services/auth_service.dart';
 import '../../models/appointment.dart';
 import '../../models/user.dart';
 import '../auth/login_screen.dart';
+import '../doctor/add_patient_note_screen.dart';
 import 'package:intl/intl.dart';
 
 class DoctorDashboardScreen extends StatefulWidget {
@@ -88,6 +89,19 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
           context,
         ).showSnackBar(SnackBar(content: Text('Çıkış yaparken hata: $e')));
       }
+    }
+  }
+
+  Future<void> _navigateToAddNote() async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const AddPatientNoteScreen(),
+      ),
+    );
+    
+    if (result == true) {
+      // Not eklendi, randevuları yenile
+      await _loadAppointments();
     }
   }
 
@@ -246,6 +260,11 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                 ),
               ),
             ],
+          ),
+          IconButton(
+            icon: const Icon(Icons.note_add),
+            tooltip: 'Hastalara Not Yaz',
+            onPressed: _navigateToAddNote,
           ),
           IconButton(
             icon: const Icon(Icons.logout),
