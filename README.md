@@ -7,3 +7,7 @@ DentApp is a simple dental management application that allows doctors and patien
 - **Appointment Booking**: Patients can book appointments with available doctors.  
 - **Notes Section**: Doctors can write and manage notes related to patients.  
 - **Mini Blog Page**: A small blog area for sharing updates, articles, or health tips.  
+
+## 🚧 Work in Progress
+DentApp is still under active development.  
+Some features may change, and new functionalities will be added in future updates.  
