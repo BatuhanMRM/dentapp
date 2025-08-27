@@ -1,16 +1,13 @@
-# dentapp
+# DentApp 🦷
 
-A new Flutter project.
+DentApp is a simple dental management application that allows doctors and patients to interact through an easy-to-use platform.  
 
-## Getting Started
+## Features
+- **Doctor & Patient Login**: Separate authentication system for doctors and patients.  
+- **Appointment Booking**: Patients can book appointments with available doctors.  
+- **Notes Section**: Doctors can write and manage notes related to patients.  
+- **Mini Blog Page**: A small blog area for sharing updates, articles, or health tips.  
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🚧 Work in Progress
+DentApp is still under active development.  
+Some features may change, and new functionalities will be added in future updates.  
